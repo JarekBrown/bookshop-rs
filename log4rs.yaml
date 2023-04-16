@@ -1,0 +1,68 @@
+#`` configuration file for log4rs -- deaddrop-rs
+appenders:
+
+  stdout:
+    kind: console
+    encoder:
+      pattern: "{m}{n}"
+
+  info:
+    kind: rolling_file
+    path: log/logs_info.txt
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S)} | {f}:{L} — {m}{n}"
+    policy:
+      trigger:
+        kind: size
+        limit: 15 mb
+      roller:
+        kind: fixed_window
+        pattern: logs/log_{}.txt
+        count: 3
+        base: 1
+  warn:
+    kind: rolling_file
+    path: log/logs_warn.txt
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S)} | {f}:{L} — {m}{n}"
+    policy:
+      trigger:
+        kind: size
+        limit: 15 mb
+      roller:
+        kind: fixed_window
+        pattern: logs/log_{}.txt
+        count: 3
+        base: 1
+  error:
+    kind: rolling_file
+    path: log/logs_error.txt
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S)} | {f}:{L} — {m}{n}"
+    policy:
+      trigger:
+        kind: size
+        limit: 15 mb
+      roller:
+        kind: fixed_window
+        pattern: logs/log_{}.txt
+        count: 3
+        base: 1
+
+root:
+  level: trace
+  appenders:
+    - stdout
+loggers:
+  info:
+    level: info
+    appenders:
+      - info
+  warn:
+    level: warn
+    appenders:
+      - warn
+  error:
+    level: warn
+    appenders:
+      - error
