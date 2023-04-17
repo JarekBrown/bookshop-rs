@@ -13,32 +13,20 @@ pub struct Order {
 
 #[post("/new", data = "<order>")]
 pub fn create_order(order: Json<Order>) -> Result<(), String> {
-    let cid = match order.customer_id.clone() {
-        Some(c) => c,
-        None => return Err("No customer id provided".to_string()),
-    };
-    let bid = match order.book_id.clone() {
-        Some(b) => b,
-        None => return Err("No book id provided".to_string()),
-    };
+    let cid = validate_id(order.customer_id.clone(), "cid")?;
+    let bid = validate_id(order.book_id.clone(), "bid")?;
 
-    purchaseOrders::create_purchase_order(cid, bid);
+    purchaseOrders::create_purchase_order(cid, bid)?;
     Ok(())
 }
 
 #[get("/shipped", format = "json", data = "<order>")]
 pub fn get_shipped(order: Json<Order>) -> Result<Json<Order>, String> {
-    let cid = match order.customer_id.clone() {
-        Some(c) => c,
-        None => return Err("No customer id provided".into()),
-    };
-    let bid = match order.book_id.clone() {
-        Some(b) => b,
-        None => return Err("No book id provided".into()),
-    };
+    let cid = validate_id(order.customer_id.clone(), "cid")?;
+    let bid = validate_id(order.book_id.clone(), "bid")?;
 
-    let oid = purchaseOrders::get_purchase_order_id(cid, bid);
-    let shipped = purchaseOrders::is_po_shipped(oid);
+    let oid = purchaseOrders::get_purchase_order_id(cid, bid)?;
+    let shipped = purchaseOrders::is_po_shipped(oid)?;
     Ok(Json(Order {
         id: None,
         customer_id: None,
@@ -49,33 +37,19 @@ pub fn get_shipped(order: Json<Order>) -> Result<Json<Order>, String> {
 
 #[put("/ship", data = "<order>")]
 pub fn ship_order(order: Json<Order>) -> Result<(), String> {
-    let oid = match order.id.clone() {
-        Some(o) => o,
-        None => return Err("No order id provided".to_string()),
-    };
+    let oid = validate_id(order.id.clone(), "oid")?;
 
-    purchaseOrders::ship_po(oid);
+    purchaseOrders::ship_po(oid)?;
     Ok(())
 }
 
 #[get("/status", format = "json", data = "<order>")]
 pub fn get_status(order: Json<Order>) -> Result<RawHtml<String>, String> {
-    let oid = match order.id.clone() {
-        Some(o) => o,
-        None => return Err("No order id provided".to_string()),
-    };
+    let oid = validate_id(order.id.clone(), "oid")?;
+    let cid = validate_id(order.id.clone(), "cid")?;
+    let bid = validate_id(order.id.clone(), "bid")?;
 
-    let cid = match order.customer_id.clone() {
-        Some(c) => c,
-        None => return Err("No customer id provided".to_string()),
-    };
-
-    let bid = match order.book_id.clone() {
-        Some(b) => b,
-        None => return Err("No book id provided".to_string()),
-    };
-
-    let addr = customers::get_customer_address(cid);
+    let addr = customers::get_customer_address(cid)?;
 
     let response_html = format!(
         "
@@ -98,4 +72,18 @@ pub fn get_status(order: Json<Order>) -> Result<RawHtml<String>, String> {
     );
 
     Ok(RawHtml(response_html.clone()))
+}
+
+fn validate_id(id: Option<i64>, label: &str) -> Result<i64, String> {
+    //! makes sure a valid value is provided for cid/bid/oid
+    let id = match id {
+        Some(s) => s,
+        None => return Err(format!("no {} provided",label))
+    };
+    
+    if id <= 0 {
+        Err(format!("{} must be a value greater than 0",label))
+    } else {
+        Ok(id)
+    }
 }
