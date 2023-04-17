@@ -1,0 +1,8 @@
+
+2023-04-15 22:18:01 | src\db\db.rs:32 — database created
+2023-04-16 13:27:11 | src\main.rs:15 — server started
+2023-04-16 13:27:31 | src\db\books.rs:16 — book created: Children of Dune by Frank Herbert for 5
+2023-04-16 14:51:11 | src\main.rs:15 — server started
+2023-04-16 14:54:10 | src\db\customers.rs:16 — new customer added: Billy
+2023-04-16 14:56:21 | src\main.rs:15 — server started
+2023-04-16 14:56:33 | src\db\customers.rs:16 — new customer added: Bob

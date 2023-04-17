@@ -1,0 +1,4 @@
+2023-04-16 13:26:38 | src\db\books.rs:19 — pre-existing book entered for creation (was not added): Dune by Frank Herbert for 5
+2023-04-16 14:53:44 | src\handlers\customers.rs:78 — customer address validation failed: no address provided
+2023-04-16 14:54:24 | src\db\customers.rs:19 — failed to insert customer into database: Billy
+2023-04-16 14:55:10 | src\db\customers.rs:19 — customer already in database: Billy
