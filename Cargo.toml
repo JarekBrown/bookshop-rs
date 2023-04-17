@@ -11,6 +11,7 @@ serde = "1.0.158"
 log4rs = "1.2.0"
 log = "0.4.17"
 regex = "1.7.3"
+titlecase = "2.2.1"
 
 [dependencies.rocket]
 version = "=0.5.0-rc.3"
