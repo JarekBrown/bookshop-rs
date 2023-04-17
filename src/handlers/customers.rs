@@ -1,4 +1,4 @@
-use log::{error, info, warn};
+use log::warn;
 use regex::Regex;
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
@@ -25,7 +25,7 @@ pub fn create_customer(customer: Json<Customer>) -> Result<(), String> {
 
 #[post("/updateAddress", data = "<customer>")]
 pub fn update_address(customer: Json<Customer>) -> Result<(), String> {
-    let cid = validate_cid(customer.id.clone())?;
+    let cid = validate_cid(customer.id)?;
     let address = validate_addr(customer.shipping_address.clone())?;
 
     customers::update_customer_address(cid, address)?;

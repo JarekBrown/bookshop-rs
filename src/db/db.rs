@@ -1,7 +1,7 @@
 // use rocket::log::private::info;
-use rusqlite::{Connection};
-use std::{env,fs, path::Path};
-use log::{info, error};
+use log::{error, info};
+use rusqlite::Connection;
+use std::{env, fs, path::Path};
 
 pub fn connect() -> Connection {
     let mut must_initialize_db = false;
@@ -13,7 +13,7 @@ pub fn connect() -> Connection {
         error!(target: "error", "failed to open database: {}", e);
         panic!("database access error")
     });
-    
+
     if must_initialize_db {
         let line_ending = match env::consts::OS {
             "windows" => ";\r\n",
@@ -28,8 +28,8 @@ pub fn connect() -> Connection {
                 panic!("command execution failure")
             });
         }
-        
+
         info!(target: "info", "database created");
     }
-    return connection;
+    connection
 }

@@ -13,8 +13,8 @@ pub struct Order {
 
 #[post("/new", data = "<order>")]
 pub fn create_order(order: Json<Order>) -> Result<(), String> {
-    let cid = validate_id(order.customer_id.clone(), "cid")?;
-    let bid = validate_id(order.book_id.clone(), "bid")?;
+    let cid = validate_id(order.customer_id, "cid")?;
+    let bid = validate_id(order.book_id, "bid")?;
 
     purchaseOrders::create_purchase_order(cid, bid)?;
     Ok(())
@@ -22,8 +22,8 @@ pub fn create_order(order: Json<Order>) -> Result<(), String> {
 
 #[get("/shipped", format = "json", data = "<order>")]
 pub fn get_shipped(order: Json<Order>) -> Result<Json<Order>, String> {
-    let cid = validate_id(order.customer_id.clone(), "cid")?;
-    let bid = validate_id(order.book_id.clone(), "bid")?;
+    let cid = validate_id(order.customer_id, "cid")?;
+    let bid = validate_id(order.book_id, "bid")?;
 
     let oid = purchaseOrders::get_purchase_order_id(cid, bid)?;
     let shipped = purchaseOrders::is_po_shipped(oid)?;
@@ -37,7 +37,7 @@ pub fn get_shipped(order: Json<Order>) -> Result<Json<Order>, String> {
 
 #[put("/ship", data = "<order>")]
 pub fn ship_order(order: Json<Order>) -> Result<(), String> {
-    let oid = validate_id(order.id.clone(), "oid")?;
+    let oid = validate_id(order.id, "oid")?;
 
     purchaseOrders::ship_po(oid)?;
     Ok(())
@@ -45,9 +45,9 @@ pub fn ship_order(order: Json<Order>) -> Result<(), String> {
 
 #[get("/status", format = "json", data = "<order>")]
 pub fn get_status(order: Json<Order>) -> Result<RawHtml<String>, String> {
-    let oid = validate_id(order.id.clone(), "oid")?;
-    let cid = validate_id(order.id.clone(), "cid")?;
-    let bid = validate_id(order.id.clone(), "bid")?;
+    let oid = validate_id(order.id, "oid")?;
+    let cid = validate_id(order.id, "cid")?;
+    let bid = validate_id(order.id, "bid")?;
 
     let addr = customers::get_customer_address(cid)?;
 
@@ -71,18 +71,18 @@ pub fn get_status(order: Json<Order>) -> Result<RawHtml<String>, String> {
         &addr.as_str()
     );
 
-    Ok(RawHtml(response_html.clone()))
+    Ok(RawHtml(response_html))
 }
 
 fn validate_id(id: Option<i64>, label: &str) -> Result<i64, String> {
     //! makes sure a valid value is provided for cid/bid/oid
     let id = match id {
         Some(s) => s,
-        None => return Err(format!("no {} provided",label))
+        None => return Err(format!("no {} provided", label)),
     };
-    
+
     if id <= 0 {
-        Err(format!("{} must be a value greater than 0",label))
+        Err(format!("{} must be a value greater than 0", label))
     } else {
         Ok(id)
     }

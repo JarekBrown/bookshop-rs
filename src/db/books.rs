@@ -10,7 +10,7 @@ pub fn create_book(title: String, author: String, price: f64) -> Result<(), Stri
     if !exist {
         db.execute(
             "INSERT INTO books (title, author, price) VALUES (?1, ?2, ?3)",
-            &[&title, &author, &format!("{}", price)],
+            [&title, &author, &format!("{}", price)],
         )
         .expect("expected to be able to insert into Books table");
         info!(target: "info", "book created: {} by {} for {}", title, author, price);
@@ -32,9 +32,12 @@ pub fn get_book_id(title: String, author: String) -> Result<i64, String> {
             .prepare("SELECT id FROM books WHERE title = ?1 AND author = ?2")
             .expect("expected to be able to select from Books table");
         let mut rows = stmt
-            .query_map(&[&title, &author], |row| row.get(0))
+            .query_map([&title, &author], |row| row.get(0))
             .expect("expected to be able to get id from Books table");
-        let id = rows.next().expect("expected a value in the row").expect("problem getting bid from database");
+        let id = rows
+            .next()
+            .expect("expected a value in the row")
+            .expect("problem getting bid from database");
         Ok(id)
     } else {
         warn!(target: "warn", "failed to get book id: {} by {}", title, author);
@@ -53,9 +56,12 @@ pub fn get_book_price(bid: i64) -> Result<f64, String> {
             .prepare("SELECT price FROM books WHERE id = ?1")
             .expect("expected to be able to select from Books table");
         let mut rows = stmt
-            .query_map(&[&bid], |row| row.get(0))
+            .query_map([&bid], |row| row.get(0))
             .expect("expected to be able to get price from Books table");
-        let price = rows.next().expect("expected a value in the row").expect("problem getting price from database");
+        let price = rows
+            .next()
+            .expect("expected a value in the row")
+            .expect("problem getting price from database");
         Ok(price)
     } else {
         warn!(target: "warn", "failed to get book price: {}", bid);
@@ -63,16 +69,13 @@ pub fn get_book_price(bid: i64) -> Result<f64, String> {
     }
 }
 
-fn exists(
-    title: String,
-    author: String,
-) -> Result<bool, rusqlite::Error> {
+fn exists(title: String, author: String) -> Result<bool, rusqlite::Error> {
     //! checks if requested item exists in database
     let conn = connect();
     let check = conn
         .prepare("SELECT id FROM books WHERE title = ?1 AND author = ?2")
         .expect("expected to be able to select from Books table")
-        .exists(&[&title, &author])?;
+        .exists([&title, &author])?;
     Ok(check)
 }
 
@@ -82,6 +85,6 @@ fn exists_id(bid: i64) -> Result<bool, rusqlite::Error> {
     let check = conn
         .prepare("SELECT price FROM books WHERE id = ?1")
         .expect("expected to be able to select from Books table")
-        .exists(&[&bid])?;
+        .exists([&bid])?;
     Ok(check)
 }

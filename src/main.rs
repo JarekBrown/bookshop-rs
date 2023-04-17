@@ -1,5 +1,5 @@
-use logging::log_init;
 use log::info;
+use logging::log_init;
 
 #[macro_use]
 extern crate rocket;

@@ -1,5 +1,5 @@
 use crate::db::books;
-use log::{error, info, warn};
+use log::warn;
 use regex::Regex;
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
@@ -18,7 +18,7 @@ impl Book {}
 pub fn create_book(book: Json<Book>) -> Result<(), String> {
     let title = validate_title(book.title.clone())?;
     let author = validate_auth(book.author.clone())?;
-    let price = validate_price(book.price.clone())?;
+    let price = validate_price(book.price)?;
 
     books::create_book(title, author, price)?;
     Ok(())

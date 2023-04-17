@@ -10,7 +10,7 @@ pub fn create_purchase_order(cid: i64, bid: i64) -> Result<i64, String> {
     if !exist {
         db.execute(
             "INSERT INTO PurchaseOrders (customerId, bookId, shipped) VALUES (?1, ?2, 0)",
-            &[&cid, &bid],
+            [&cid, &bid],
         )
         .expect("expected to be able to insert into PurchaseOrders table");
         info!(target: "info", "new order created (cid, bid): {}, {}", cid, bid);
@@ -32,7 +32,7 @@ pub fn get_purchase_order_id(cid: i64, bid: i64) -> Result<i64, String> {
             .prepare("SELECT id FROM PurchaseOrders WHERE customerId = ?1 AND bookId = ?2")
             .expect("expected to be able to select from PurchaseOrders table");
         let mut rows = stmt
-            .query_map(&[&cid, &bid], |row| row.get(0))
+            .query_map([&cid, &bid], |row| row.get(0))
             .expect("expected to be able to get id from PurchaseOrders table");
         let id = rows
             .next()
@@ -56,7 +56,7 @@ pub fn is_po_shipped(poid: i64) -> Result<i64, String> {
             .prepare("SELECT shipped FROM PurchaseOrders WHERE id = ?1")
             .expect("expected to be able to select from PurchaseOrders table");
         let mut rows = stmt
-            .query_map(&[&poid], |row| row.get(0))
+            .query_map([&poid], |row| row.get(0))
             .expect("expected to be able to get shipped from PurchaseOrders table");
         let shipped: i64 = rows
             .next()
@@ -78,7 +78,7 @@ pub fn ship_po(poid: i64) -> Result<(), String> {
     if exist {
         db.execute(
             "UPDATE PurchaseOrders SET shipped = 1 WHERE id = ?1",
-            &[&poid],
+            [&poid],
         )
         .expect("expected to be able to update PurchaseOrders table");
         Ok(())
@@ -94,7 +94,7 @@ fn exists_id(cid: i64, bid: i64) -> Result<bool, rusqlite::Error> {
     let check = conn
         .prepare("SELECT id FROM PurchaseOrders WHERE customerId = ?1 AND bookId = ?2")
         .expect("expected to be able to select from Books table")
-        .exists(&[&cid, &bid])?;
+        .exists([&cid, &bid])?;
     Ok(check)
 }
 
@@ -104,6 +104,6 @@ fn exists_shipped(poid: i64) -> Result<bool, rusqlite::Error> {
     let check = conn
         .prepare("SELECT shipped FROM PurchaseOrders WHERE id = ?1")
         .expect("expected to be able to select from Books table")
-        .exists(&[&poid])?;
+        .exists([&poid])?;
     Ok(check)
 }
